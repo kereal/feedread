@@ -1,0 +1,28 @@
+name: feedread
+version: 0.1.0
+
+authors:
+  - kirill svetlov <kereal@gmail.com>
+
+targets:
+  web:
+    main: src/web.cr
+  grab:
+    main: src/grab.cr
+
+crystal: 1.4.1
+
+license: MIT
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+  granite:
+    github: amberframework/granite
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+  micrate:
+    github: juanedi/micrate
+  spec-kemal:
+    github: kemalcr/spec-kemal
+    branch: master
