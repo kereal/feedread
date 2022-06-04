@@ -1,6 +1,6 @@
 /docs/
 /lib/
-/bin/
+#/bin/
 /.shards/
 *.dwarf
 *.sqlite3
