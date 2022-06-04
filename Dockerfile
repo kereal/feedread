@@ -5,14 +5,14 @@ WORKDIR /app
 RUN apk update && apk add sqlite-static
 
 #COPY ./bin ./bin
-#COPY ./db ./db
+COPY ./db ./db
 COPY ./src ./src
 COPY ./shard.yml ./shard.lock ./
 
 RUN shards install --production
 
 RUN shards build --no-debug --release --production --static -v
-#RUN chmod +x bin/micrate && bin/micrate up
+RUN chmod +x bin/micrate && bin/micrate up
 
 # Result image with one layer
 FROM nginx:alpine
