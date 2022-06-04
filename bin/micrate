@@ -2,7 +2,6 @@
 #
 # To build a standalone command line client, require the
 # driver you wish to use and use `Micrate::Cli`.
-#
 
 require "micrate"
 require "sqlite3"
