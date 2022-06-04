@@ -19,8 +19,9 @@ COPY ./run ./
 RUN chmod +x ./run
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ./feedread-nginx.conf /etc/nginx/conf.d/feedread.conf
-COPY --from=builder /app/bin/grab /app/bin/web /app/*.sqlite3 ./
-RUN echo $'#!/bin/sh\ncd /app && ./grab -a' > /etc/periodic/hourly/grab && chmod +x /etc/periodic/hourly/grab
+COPY --from=builder /app/bin/grab /app/bin/web ./
+COPY --from=builder /app/*.sqlite3 ./
+RUN echo $'#!/bin/sh\ncd /app && ./grab -a' > /etc/periodic/15min/grab && chmod +x /etc/periodic/15min/grab
 EXPOSE 80/tcp
 
 CMD ./run
