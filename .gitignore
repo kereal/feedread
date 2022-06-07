@@ -1,10 +1,9 @@
 /docs/
 /lib/
-#/bin/
 /.shards/
 *.dwarf
 *.sqlite3
 *.sqbpro
 *.log
-./grab
-./web
+grab
+web
