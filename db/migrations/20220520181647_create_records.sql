@@ -12,7 +12,7 @@ CREATE TABLE records(
   pubdate TIMESTAMP,
   favorite BOOLEAN DEFAULT 0 NOT NULL,
   deleted BOOLEAN DEFAULT 0 NOT NULL,
-  created_at TIMESTAMP,
+  created_at TIMESTAMP
 );
 
 -- +micrate Down
