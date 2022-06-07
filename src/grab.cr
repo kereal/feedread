@@ -24,6 +24,10 @@ def grab_feed(source)
         item.xpath_nodes("category").first.content :
         item.xpath_nodes("category").first["label"]
     else category = nil end
+    if Record.where(uid: uid).exists?
+      exists_count += 1
+      next
+    end
     if source.ignored_categories_list.includes?(category)
       ignored_count += 1
       next
@@ -37,25 +41,29 @@ def grab_feed(source)
         content = nil
       end
     end
-    if !Record.where(uid: uid).exists?
-      Record.create!(
-        source_id: source.id,
-        uid: uid,
-        title: item.xpath_nodes("title").first.content,
-        category: category,
-        link: source.type == "rss" ? item.xpath_nodes("link").first.content : item.xpath_nodes("link").first["href"],
-        content: content ? content.gsub(/<\/?[^>]*>/, "")
-          .gsub(/\t/, " ").gsub(/\n/, " ")
-          .squeeze.strip : nil,
-        favorite: false,
-        deleted: false
-      )
-      puts "   Record created: #{uid}"
-      Log.info { "Record created: #{uid}" }
-      created_count += 1
-    else
-      exists_count += 1
+    pubdate = nil
+    ["%a, %d %b %Y %T %z", "%a, %d %b %Y %T %^Z", "%Y-%m-%dT%T%z"].each do |format|
+      begin
+        pubdate = Time.parse(item.xpath_nodes(source.type == "rss" ? "pubDate" : "updated").first.content, format, Time::Location::UTC)
+        break
+      rescue; end
     end
+    Record.create!(
+      source_id: source.id,
+      uid: uid,
+      title: item.xpath_nodes("title").first.content,
+      category: category,
+      link: source.type == "rss" ? item.xpath_nodes("link").first.content : item.xpath_nodes("link").first["href"],
+      content: content ? content.gsub(/<\/?[^>]*>/, "")
+        .gsub(/\t/, " ").gsub(/\n/, " ")
+        .squeeze.strip : nil,
+      pubdate: pubdate,
+      favorite: false,
+      deleted: false
+    )
+    puts "   Record created: #{uid}"
+    Log.info { "Record created: #{uid}" }
+    created_count += 1
   end
   puts "   Total: #{total_count}"
   puts "   Exists: #{exists_count}"

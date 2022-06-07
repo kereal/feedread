@@ -16,10 +16,12 @@ class Record < Granite::Base
   column category : String?
   column link : String
   column content : String?
+  column pubdate : Time?
   column favorite : Bool
   column deleted : Bool
   column created_at : Time?
   validate_not_blank :title
+  validate_not_blank :uid
 
   def self.per_page
     10
@@ -39,6 +41,7 @@ class Record < Granite::Base
             json.field "category", record.category
             json.field "link", record.link
             json.field "content", record.content
+            json.field "pubdate", record.pubdate
             json.field "favorite", record.favorite
             json.field "source_title", record.source.title
             json.field "source_id", record.source.id
@@ -63,6 +66,9 @@ class Source < Granite::Base
   column active : Bool
   column last_parsed_at : Time?
   column created_at : Time?
+  validate_not_blank :title
+  validate_not_blank :type
+  validate_not_blank :url
   def ignored_categories_list
     cats = self.ignore_categories || ""
     cats.split("||")

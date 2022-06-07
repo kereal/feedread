@@ -9,10 +9,10 @@ CREATE TABLE records(
   category VARCHAR,
   link VARCHAR NOT NULL,
   content TEXT,
+  pubdate TIMESTAMP,
   favorite BOOLEAN DEFAULT 0 NOT NULL,
   deleted BOOLEAN DEFAULT 0 NOT NULL,
   created_at TIMESTAMP,
-  updated_at TIMESTAMP
 );
 
 -- +micrate Down
