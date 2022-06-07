@@ -6,7 +6,6 @@ Spec.before_suite {
     Record.create!(source_id: source.id, uid: "uid #{i}", title: "title #{i}", link: "http://", favorite: false, deleted: false)
     Record.create!(source_id: source.id, uid: "uid #{i}", title: "fav #{i}", link: "http://", favorite: true, deleted: false)
   end
-  p! Record.all.size
 }
 
 describe "Web::Kemal::App" do
@@ -50,7 +49,7 @@ describe "Web::Kemal::App" do
   end
 
   it "Category is ignored" do
-    source = Source.first!
+    source = Source.create!(type: "rss", title: "123", url: "http://", active: true)
     headers = HTTP::Headers{"Content-Type" => "application/x-www-form-urlencoded"}
     path = "/sources/#{source.try(&.id)}/ignore_category"
     #post path, body: "category=TEZD", headers: headers
@@ -86,7 +85,4 @@ end
 Spec.after_suite {
   Record.all.each{ |r| r.destroy }
   Source.all.each{ |s| s.destroy }
-  puts ""
-  p! Record.all.size
-  p! Source.all.size
 }

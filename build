@@ -2,9 +2,9 @@
 
 pwd=$(pwd)
 
-# make frontend
+# build frontend
 rm -rf public/*
-cd ../../feedread
+cd ../vue
 npm run build
 mv dist/* $pwd/public
 cd $pwd
