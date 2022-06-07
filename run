@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ./grab -a
-/usr/sbin/crond -d
+/usr/sbin/crond -b
 ./web --bind 127.0.0.1 --port 3000 > /dev/null &
 sed -i "/worker_processes\s/c\worker_processes 2;" /etc/nginx/nginx.conf
 nginx -g 'daemon off;'
