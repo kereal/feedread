@@ -64,5 +64,34 @@ get "/records/favorites" do |env|
   )
 end
 
+get "/records/source/:id" do |env|
+  id = env.params.url["id"]?.presence.try(&.to_i?) || next
+  Record.with_sources_as_json(
+    false,
+    env.params.query["limit"]?.presence.try(&.to_i?),
+    "AND records.source_id = #{id}"
+  )
+end
+
+delete "/sources/:id" do |env|
+  source = Source.find env.params.url["id"]
+  if source && source.destroy
+    source.to_json
+  end
+end
+
+# create
+post "/sources" do |env|
+  Source.create!(env.params.body.to_h).to_json
+end
+
+# update
+post "/sources/:id" do |env|
+  source = Source.find env.params.url["id"]
+  if source && source.update(env.params.body.to_h)
+    source.to_json
+  end
+end
+
 
 Kemal.run

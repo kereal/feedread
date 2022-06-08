@@ -1,5 +1,9 @@
 #!/bin/bash
 
+docker stop feedread
+docker rm feedread
+docker rmi feedread
+
 pwd=$(pwd)
 
 # build frontend
@@ -10,10 +14,10 @@ mv dist/* $pwd/public
 cd $pwd
 
 # make image
-docker build -t kereal/feedread .
+docker build -t feedread .
 
 docker run -idt \
 -v $pwd/feedread.sqlite3:/app/feedread.sqlite3 \
 -v $pwd/grab.log:/app/grab.log \
---name feedread -p 3008:80 kereal/feedread
+--name feedread -p 3008:80 feedread
 

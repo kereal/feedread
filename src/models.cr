@@ -27,10 +27,10 @@ class Record < Granite::Base
     10
   end
 
-  def self.with_sources_as_json(favorites = false, limit = self.per_page)
+  def self.with_sources_as_json(favorites = false, limit = self.per_page, where = "")
     limit ||= self.per_page
     records = Record.all("JOIN sources source ON records.source_id = source.id
-      WHERE records.deleted = ? AND records.favorite = ?
+      WHERE records.deleted = ? AND records.favorite = ? #{where}
       ORDER BY records.id DESC LIMIT ?", [false, favorites, limit])
     JSON.build do |json|
       json.array do

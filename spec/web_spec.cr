@@ -78,6 +78,50 @@ describe "Web::Kemal::App" do
     Record.find!(r.id).try(&.favorite).should eq true
   end
 
+  # /get/records/source/1
+  it "Records by source filtering is working" do
+    source = Source.create!(type: "rss", title: "by source", url: "http://", active: true)
+    Record.create!(source_id: source.id, uid: "u0", title: "t0", link: "http://", favorite: false, deleted: false)
+    Record.create!(source_id: source.id, uid: "u1", title: "t1", link: "http://", favorite: false, deleted: false)
+    Record.create!(source_id: source.id, uid: "u2", title: "t2", link: "http://", favorite: false, deleted: false)
+    Record.create!(source_id: source.id, uid: "u3", title: "t3", link: "http://", favorite: true, deleted: false)
+    Record.create!(source_id: source.id, uid: "u4", title: "t4", link: "http://", favorite: false, deleted: true)
+    get "/records/source/#{source.id}"
+    JSON.parse(response.body).as_a.map{|r|r["title"]}.should eq ["t2", "t1", "t0"]
+    get "/records/source/#{source.id}?limit="
+    JSON.parse(response.body).as_a.map{|r|r["title"]}.should eq ["t2", "t1", "t0"]
+    get "/records/source/asdad"
+    response.body.should eq ""
+    get "/records/source/999"
+    response.body.should eq "[]"
+    get "/records/source/#{source.id}?limit=2"
+    JSON.parse(response.body).as_a.map{|r|r["title"]}.should eq ["t2", "t1"]
+  end
+
+  # delete "/sources/:id"
+  it "Source deletes" do
+     source = Source.create!(type: "rss", title: "delete src", url: "http://", active: true)
+     delete "/sources/#{source.id}"
+     JSON.parse(response.body).as_h["id"].should eq source.id
+     Source.find(source.id).should eq nil
+  end
+
+  # post "/sources"
+  it "Source creates" do
+    headers = HTTP::Headers{"Content-Type" => "application/x-www-form-urlencoded"}
+    post "/sources", body: "type=rss&title=testcreate&url=http://ya.ru&active=true", headers: headers
+    id = JSON.parse(response.body).as_h["id"].to_s
+    Source.find(id).try(&.title).should eq "testcreate"
+  end
+
+  # post "/sources/:id"
+  it "Source updates" do
+    source = Source.create!(type: "rss", title: "upd test", url: "http://", active: true)
+    headers = HTTP::Headers{"Content-Type" => "application/x-www-form-urlencoded"}
+    post "/sources/#{source.id}", body: "type=atom&title=upd&url=https://a.ru&active=false", headers: headers
+    JSON.parse(response.body).as_h["id"].should eq source.id
+    Source.find(source.id).try(&.to_h.values.compact[0..-3]).should eq JSON.parse(response.body).as_h.values[0..-3]
+  end
 
 end
 
