@@ -14,3 +14,4 @@ web:
 
 grab:
 	$(ST) src/grab.cr
+
