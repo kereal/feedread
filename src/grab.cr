@@ -132,6 +132,7 @@ option_parser = OptionParser.parse do |parser|
       r.destroy!
       count += 1
     end
+    Service.all.to_a
     msg = "Prune old records: deleted: #{count}"
     Log.info { msg }
     puts msg

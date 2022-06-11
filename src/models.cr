@@ -5,6 +5,7 @@ dbname = ENV.fetch("KEMAL_ENV", nil)=="test" ? "feedread_test" : "feedread"
 
 Granite::Connections << Granite::Adapter::Sqlite.new(name: "sqlite3", url: "sqlite3://#{dbname}.sqlite3")
 
+
 class Record < Granite::Base
   connection sqlite3
   table records
@@ -73,4 +74,14 @@ class Source < Granite::Base
     cats = self.ignore_categories || ""
     cats.split("||")
   end
+end
+
+
+class Service < Granite::Base
+  connection sqlite3
+  select_statement <<-SQL
+    VACUUM;
+    PRAGMA optimize;
+    PRAGMA integrity_check;
+  SQL
 end

@@ -127,6 +127,6 @@ end
 
 
 Spec.after_suite {
-  Record.all.each{ |r| r.destroy }
-  Source.all.each{ |s| s.destroy }
+  Record.clear
+  Source.clear
 }
