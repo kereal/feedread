@@ -15,6 +15,7 @@ cd $pwd
 
 # make image
 docker build -t feedread .
+docker rmi `docker images --filter label=stage=builder -q`
 
 docker run -idt \
 -v $pwd/feedread.sqlite3:/app/feedread.sqlite3 \

@@ -36,14 +36,12 @@ post "/sources/:id/ignore_category" do |env|
     if source.ignored_categories_list != [""]
       if !source.ignored_categories_list.includes?(new)
         source.update(ignore_categories: source.ignored_categories_list.push(new).join("||"))
-        puts "Ban added: #{new}"
       end
     else
       source.update(ignore_categories: new)
-      puts "Created ignored_categories_list"
     end
     Record.where(source_id: source.id, category: new, favorite: false).each do |record|
-      puts "Destroyed: #{record.title} / #{record.category}" if record.destroy!
+      record.destroy!
     end
   else
     { error: "source not found" }.to_json
