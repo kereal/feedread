@@ -7,7 +7,6 @@ require "micrate"
 require "sqlite3"
 
 dbname = ENV.fetch("KEMAL_ENV", nil)=="test" ? "feedread_test" : "feedread"
-p! dbname
 
 Micrate::DB.connection_url = "sqlite3://#{dbname}.sqlite3"
 Micrate::Cli.run

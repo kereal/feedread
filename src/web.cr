@@ -22,6 +22,8 @@ delete "/records/:id" do |env|
   record = Record.find env.params.url["id"]
   if record && record.update!(deleted: true)
     record.to_json
+  else
+    env.response.status_code = 400
   end
 end
 
@@ -44,7 +46,8 @@ post "/sources/:id/ignore_category" do |env|
       record.destroy!
     end
   else
-    { error: "source not found" }.to_json
+    # { error: "source not found" }.to_json
+    env.response.status_code = 400
   end
 end
 
@@ -52,6 +55,8 @@ post "/records/:id/favorite" do |env|
   record = Record.find env.params.url["id"]
   if record && record.update(favorite: true)
     record.to_json
+  else
+    env.response.status_code = 400
   end
 end
 
@@ -75,6 +80,8 @@ delete "/sources/:id" do |env|
   source = Source.find env.params.url["id"]
   if source && source.destroy
     source.to_json
+  else
+    env.response.status_code = 400
   end
 end
 
@@ -88,6 +95,8 @@ post "/sources/:id" do |env|
   source = Source.find env.params.url["id"]
   if source && source.update(env.params.body.to_h)
     source.to_json
+  else
+    env.response.status_code = 400
   end
 end
 

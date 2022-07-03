@@ -23,6 +23,7 @@ def grab_feed(source)
       category = source.type == "rss" ?
         item.xpath_nodes("category").first.content :
         item.xpath_nodes("category").first["label"]
+      category = nil if category.strip.empty?
     else category = nil end
     if Record.where(uid: uid).exists?
       exists_count += 1
@@ -38,8 +39,7 @@ def grab_feed(source)
       begin
         content = item.xpath_nodes("content:encoded").first.content
       rescue
-        content = nil
-      end
+        content = nil; end
     end
     pubdate = nil
     ["%a, %d %b %Y %T %z", "%a, %d %b %Y %T %^Z", "%Y-%m-%dT%T%z"].each do |format|
@@ -51,12 +51,10 @@ def grab_feed(source)
     Record.create!(
       source_id: source.id,
       uid: uid,
-      title: item.xpath_nodes("title").first.content,
+      title: HTML.unescape(item.xpath_nodes("title").first.content),
       category: category,
       link: source.type == "rss" ? item.xpath_nodes("link").first.content : item.xpath_nodes("link").first["href"],
-      content: content ? content.gsub(/<\/?[^>]*>/, "")
-        .gsub(/\t/, " ").gsub(/\n/, " ")
-        .squeeze.strip : nil,
+      content: content ? HTML.unescape(content).gsub(/<\/?[^>]*>/, "").gsub(/[\t\n]/, " ").strip : nil,
       pubdate: pubdate,
       favorite: false,
       deleted: false
@@ -88,14 +86,14 @@ def grab(source_id)
   else
     puts "Source with id=#{source_id} not found"
     Log.error { "Source with id=#{source_id} not found" }
-  end 
+  end
 end
 
 
 option_parser = OptionParser.parse do |parser|
- 
+
   parser.banner = "Feed grabber, use -h to help"
-    
+
   parser.on "-a", "Grab all sources" do
     Log.info { "Grabbing all sources" }
     Source.where(active: true).order(id: :asc).each do |source|
@@ -127,13 +125,13 @@ option_parser = OptionParser.parse do |parser|
   parser.on "-p", "Prune old records" do |source_id|
     count = 0
     Record.where(deleted: true)
-          .where(:created_at, :lt, Time.local - 14.days)
+          .where(:created_at, :lt, Time.local - 30.days)
           .each do |r|
-      r.destroy!
-      count += 1
+            r.destroy!
+            count += 1
     end
     Service.all.to_a
-    msg = "Prune old records: deleted: #{count}"
+    msg = " * Prune old records\n   deleted: #{count}"
     Log.info { msg }
     puts msg
     exit

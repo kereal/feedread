@@ -59,6 +59,7 @@ class Source < Granite::Base
   connection sqlite3
   table sources
   has_many :records, class_name: Record, foreign_key: :source_id
+  after_destroy :destroy_records
   column id : Int64, primary: true
   column type : String
   column title : String
@@ -70,6 +71,9 @@ class Source < Granite::Base
   validate_not_blank :title
   validate_not_blank :type
   validate_not_blank :url
+  def destroy_records
+    Record.exec "DELETE FROM records WHERE source_id = #{id}"
+  end
   def ignored_categories_list
     cats = self.ignore_categories || ""
     cats.split("||")

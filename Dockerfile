@@ -95,6 +95,7 @@ COPY ./feedread-nginx.conf /etc/nginx/conf.d/feedread.conf
 COPY --from=builder /app/bin/grab /app/bin/web ./
 COPY --from=builder /app/*.sqlite3 ./
 RUN echo $'#!/bin/sh\ncd /app && ./grab -a' > /etc/periodic/15min/grab && chmod a+x /etc/periodic/15min/grab
+RUN ln -sf /dev/stdout /app/grab.log
 EXPOSE 80/tcp
 
 CMD ./run
