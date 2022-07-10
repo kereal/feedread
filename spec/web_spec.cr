@@ -28,6 +28,20 @@ describe "Web::Kemal::App" do
     JSON.parse(response.body).size.should eq 2
   end
 
+  it "Records offset is working" do
+    get "/records?offset=12"
+    JSON.parse(response.body).size.should eq 4
+    get "/records/favorites/?offset=12"
+    JSON.parse(response.body).size.should eq 4
+  end
+
+  it "Records limit and offset are working together" do
+    get "/records?limit=1&offset=13"
+    JSON.parse(response.body).as_a.map(&.["id"]).first.should eq 5  # id=5
+    get "/records/favorites/?limit=1&offset=13"
+    JSON.parse(response.body).as_a.map(&.["id"]).first.should eq 6  # id=6
+  end
+
   it "Records limit default is set" do
     get "/records"
     JSON.parse(response.body).size.should eq 10
@@ -43,10 +57,27 @@ describe "Web::Kemal::App" do
     JSON.parse(response.body).size.should eq 10
   end
 
+  it "Records offset default is set" do
+    all_ids = [31, 29, 27, 25, 23, 21, 19, 17, 15, 13]
+    get "/records"
+    JSON.parse(response.body).as_a.map(&.["id"]).should eq all_ids
+    get "/records?limit="
+    JSON.parse(response.body).as_a.map(&.["id"]).should eq all_ids
+    get "/records?limit=aaa3s88"
+    JSON.parse(response.body).as_a.map(&.["id"]).should eq all_ids
+    all_ids = [32, 30, 28, 26, 24, 22, 20, 18, 16, 14]
+    get "/records/favorites"
+    JSON.parse(response.body).as_a.map(&.["id"]).should eq all_ids
+    get "/records/favorites?limit="
+    JSON.parse(response.body).as_a.map(&.["id"]).should eq all_ids
+    get "/records/favorites?limit=aaa3s88"
+    JSON.parse(response.body).as_a.map(&.["id"]).should eq all_ids
+  end
+
   # get /records/favorites
   it "Records is favorite" do
     get "/records/favorites?limit=2"
-    JSON.parse(response.body).as_a.map{|r|r["favorite"]}.should eq [true, true]
+    JSON.parse(response.body).as_a.map(&.["favorite"]).should eq [true, true]
   end
 
   # post /sources/:id/ignore_category
@@ -98,15 +129,15 @@ describe "Web::Kemal::App" do
     Record.create!(source_id: source.id, uid: "u3", title: "t3", link: "http://", favorite: true, deleted: false)
     Record.create!(source_id: source.id, uid: "u4", title: "t4", link: "http://", favorite: false, deleted: true)
     get "/records/source/#{source.id}"
-    JSON.parse(response.body).as_a.map{|r|r["title"]}.should eq ["t2", "t1", "t0"]
+    JSON.parse(response.body).as_a.map(&.["title"]).should eq ["t2", "t1", "t0"]
     get "/records/source/#{source.id}?limit="
-    JSON.parse(response.body).as_a.map{|r|r["title"]}.should eq ["t2", "t1", "t0"]
+    JSON.parse(response.body).as_a.map(&.["title"]).should eq ["t2", "t1", "t0"]
     get "/records/source/asdad"
     response.body.should eq ""
     get "/records/source/999"
     response.body.should eq "[]"
     get "/records/source/#{source.id}?limit=2"
-    JSON.parse(response.body).as_a.map{|r|r["title"]}.should eq ["t2", "t1"]
+    JSON.parse(response.body).as_a.map(&.["title"]).should eq ["t2", "t1"]
   end
 
   # delete /sources/:id

@@ -7,14 +7,20 @@ before_all do |env|
   env.response.content_type = "application/json"
 end
 
+limit = offset = nil
+
+before_get do |env|
+  limit = env.params.query["limit"]?.presence.try(&.to_i?) || 10
+  offset = env.params.query["offset"]?.presence.try(&.to_i?) || 0
+end
+
 options "/*" do |env|
   halt env, status_code: 200
 end
 
 get "/records" do |env|
   Record.with_sources_as_json(
-    false,
-    env.params.query["limit"]?.presence.try(&.to_i?)
+    false, limit, offset
   )
 end
 
@@ -62,17 +68,14 @@ end
 
 get "/records/favorites" do |env|
   Record.with_sources_as_json(
-    true,
-    env.params.query["limit"]?.presence.try(&.to_i?)
+    true, limit, offset
   )
 end
 
 get "/records/source/:id" do |env|
   id = env.params.url["id"]?.presence.try(&.to_i?) || next
   Record.with_sources_as_json(
-    false,
-    env.params.query["limit"]?.presence.try(&.to_i?),
-    "AND records.source_id = #{id}"
+    false, limit, offset, "AND records.source_id = #{id}"
   )
 end
 
