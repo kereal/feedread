@@ -113,7 +113,7 @@ option_parser = OptionParser.parse do |parser|
     exit
   end
 
-  parser.on "-l", "List sources" do |source_id|
+  parser.on "-l", "List sources" do
     Source.all.each do |source|
       puts "[#{source.id}] #{source.title}, url: #{source.url}"
       puts "type: #{source.type}, active: #{source.active}, last_parsed_at: #{source.last_parsed_at}"
@@ -122,10 +122,11 @@ option_parser = OptionParser.parse do |parser|
     exit
   end
 
-  parser.on "-p", "Prune old records" do |source_id|
+  parser.on "-p", "Prune old records" do
     count = 0
+    #days = days_number.try(&.to_i)
     Record.where(deleted: true)
-          .where(:created_at, :lt, Time.local - 30.days)
+          .where(:created_at, :lt, Time.local - 100.days)
           .each do |r|
             r.destroy!
             count += 1

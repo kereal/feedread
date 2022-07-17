@@ -10,8 +10,8 @@ end
 limit = offset = nil
 
 before_get do |env|
-  limit = env.params.query["limit"]?.presence.try(&.to_i?) || 10
-  offset = env.params.query["offset"]?.presence.try(&.to_i?) || 0
+  limit = env.params.query["limit"]?.try(&.to_i?) || 10
+  offset = env.params.query["offset"]?.try(&.to_i?) || 0
 end
 
 options "/*" do |env|
