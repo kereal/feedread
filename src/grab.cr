@@ -54,7 +54,7 @@ def grab_feed(source)
       title: HTML.unescape(item.xpath_nodes("title").first.content),
       category: category,
       link: source.type == "rss" ? item.xpath_nodes("link").first.content : item.xpath_nodes("link").first["href"],
-      content: content ? HTML.unescape(content).gsub(/<\/?[^>]*>/, "").gsub(/[\t\n]/, " ").strip : nil,
+      content: content ? HTML.unescape(content).gsub(/<\/?[^>]*>/, "").gsub(/[\t\n]/, " ").gsub("Читать далее", "").strip : nil,
       pubdate: pubdate,
       favorite: false,
       deleted: false
@@ -92,7 +92,7 @@ end
 
 option_parser = OptionParser.parse do |parser|
 
-  parser.banner = "Feed grabber, use -h to help"
+  parser.banner = "Feed grabber"
 
   parser.on "-a", "Grab all sources" do
     Log.info { "Grabbing all sources" }
@@ -122,17 +122,16 @@ option_parser = OptionParser.parse do |parser|
     exit
   end
 
-  parser.on "-p", "Prune old records" do
-    count = 0
-    #days = days_number.try(&.to_i)
+  parser.on "-p DAYS", "Prune old records" do |days_number|
+    deleted_count = 0
     Record.where(deleted: true)
-          .where(:created_at, :lt, Time.local - 100.days)
+          .where(:created_at, :lt, Time.local - (days_number.try(&.to_i?) || 100).days)
           .each do |r|
             r.destroy!
-            count += 1
+            deleted_count += 1
     end
     Service.all.to_a
-    msg = " * Prune old records\n   deleted: #{count}"
+    msg = " * Prune old records\n   deleted: #{deleted_count}"
     Log.info { msg }
     puts msg
     exit

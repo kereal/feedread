@@ -41,7 +41,7 @@ post "/sources/:id/ignore_category" do |env|
   new = env.params.body["category"]?.presence.try(&.as(String)) || next
   source = Source.find env.params.url["id"]
   if source
-    if source.ignored_categories_list != [""]
+    if !source.ignored_categories_list.empty?
       if !source.ignored_categories_list.includes?(new)
         source.update(ignore_categories: source.ignored_categories_list.push(new).join("||"))
       end

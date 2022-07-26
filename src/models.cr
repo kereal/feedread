@@ -75,8 +75,7 @@ class Source < Granite::Base
     Record.exec "DELETE FROM records WHERE source_id = #{id}"
   end
   def ignored_categories_list
-    cats = self.ignore_categories || ""
-    cats.split("||")
+    self.ignore_categories.try &.split("||") || [] of String
   end
 end
 
