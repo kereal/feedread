@@ -18,7 +18,12 @@ options "/*" do |env|
   halt env, status_code: 200
 end
 
-get "/records" do |env|
+get "/" do |env|
+  env.response.content_type = "text/html"
+  render "public/index.html"
+end
+
+get "/records" do
   Record.with_sources_as_json(
     false, limit, offset
   )
@@ -33,14 +38,14 @@ delete "/records/:id" do |env|
   end
 end
 
-get "/sources" do |env|
+get "/sources" do
   Source.all.to_json
 end
 
 post "/sources/:id/ignore_category" do |env|
-  new = env.params.body["category"]?.presence.try(&.as(String)) || next
+  new = env.params.body["category"]?.presence.try(&.as(String))
   source = Source.find env.params.url["id"]
-  if source
+  if source && new
     if !source.ignored_categories_list.empty?
       if !source.ignored_categories_list.includes?(new)
         source.update(ignore_categories: source.ignored_categories_list.push(new).join("||"))
@@ -52,7 +57,6 @@ post "/sources/:id/ignore_category" do |env|
       record.destroy!
     end
   else
-    # { error: "source not found" }.to_json
     env.response.status_code = 400
   end
 end
@@ -66,17 +70,21 @@ post "/records/:id/favorite" do |env|
   end
 end
 
-get "/records/favorites" do |env|
+get "/records/favorites" do
   Record.with_sources_as_json(
     true, limit, offset
   )
 end
 
 get "/records/source/:id" do |env|
-  id = env.params.url["id"]?.presence.try(&.to_i?) || next
-  Record.with_sources_as_json(
-    false, limit, offset, "AND records.source_id = #{id}"
-  )
+  id = env.params.url["id"]?.presence.try(&.to_i?)
+  if id
+    Record.with_sources_as_json(
+      false, limit, offset, "AND records.source_id = #{id}"
+    )
+  else
+    env.response.status_code = 400
+  end
 end
 
 delete "/sources/:id" do |env|

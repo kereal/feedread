@@ -2,6 +2,4 @@
 
 ./grab -a
 /usr/sbin/crond -b
-./web --bind 127.0.0.1 --port 3000 > /dev/null &
-sed -i "/worker_processes\s/c\worker_processes 1;" /etc/nginx/nginx.conf
-nginx -g 'daemon off;'
+KEMAL_ENV=production ./web --bind 0.0.0.0 --port 80
