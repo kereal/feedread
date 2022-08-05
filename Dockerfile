@@ -1,13 +1,16 @@
-FROM crystallang/crystal:latest-alpine as builder
+FROM alpine:edge as builder
 LABEL stage=builder
-WORKDIR /app
 
-RUN apk add sqlite-static
+WORKDIR /app
+RUN apk add crystal shards nodejs npm sqlite-static sqlite-dev zlib-static libxml2-dev openssl-dev openssl-libs-static
+# frontend
+COPY ./frontend ./frontend
+RUN cd frontend && npm i && npm run build && mkdir ../public && mv dist/* ../public && cd ..
+# backend
 COPY ./bin ./bin
 COPY ./db ./db
 COPY ./src ./src
 COPY ./spec ./spec
-COPY ./public/index.html ./public/index.html
 COPY ./shard.yml ./shard.lock ./
 RUN shards install --production
 RUN chmod +x bin/micrate && bin/micrate up
@@ -16,12 +19,12 @@ RUN KEMAL_ENV=test crystal spec
 RUN shards build --no-debug --release --production --static --link-flags '-s -w' -v
 
 # Result image with one layer
-FROM alpine:latest
+FROM alpine:edge
 
 WORKDIR /app
-COPY ./public ./public
 COPY ./run ./
 RUN chmod +x ./run
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/bin/grab /app/bin/web ./
 COPY --from=builder /app/*.sqlite3 ./
 RUN echo $'#!/bin/sh\ncd /app && ./grab -a' > /etc/periodic/15min/grab_all && chmod a+x /etc/periodic/15min/grab_all \

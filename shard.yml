@@ -1,5 +1,5 @@
 name: feedread
-version: 0.3.0
+version: 0.4.0
 
 authors:
   - kirill svetlov <kereal@gmail.com>
@@ -10,7 +10,7 @@ targets:
   grab:
     main: src/grab.cr
 
-crystal: 1.4.1
+crystal: 1.5.0
 
 license: MIT
 

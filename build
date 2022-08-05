@@ -1,23 +1,16 @@
 #!/bin/bash
 
-pwd=$(pwd)
-
 docker stop feedread
 docker rm feedread
 docker rmi feedread
 
-# build frontend
-rm -rf public/*
-cd ../vue
-npm run build
-mv dist/* $pwd/public
-cd $pwd
+set -e
 
 # make image
 docker build -t feedread .
 docker rmi `docker images --filter label=stage=builder -q`
 
 docker run -idt \
--v $pwd/feedread.sqlite3:/app/feedread.sqlite3 \
--v $pwd/grab.log:/app/grab.log \
+-v $(pwd)/feedread.sqlite3:/app/feedread.sqlite3 \
+-v $(pwd)/grab.log:/app/grab.log \
 --name feedread -p 3008:80 feedread

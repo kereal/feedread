@@ -111,5 +111,10 @@ post "/sources/:id" do |env|
   end
 end
 
+# all other
+get "/*all" do |env|
+  env.redirect "/"
+end
+
 
 Kemal.run

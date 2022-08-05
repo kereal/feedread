@@ -5,6 +5,11 @@
 *.sqlite3
 *.sqbpro
 *.log
+
+frontend/.vscode/*
+frontend/node_modules
+frontend/dist
+frontend/dist-ssr
+
 grab
 web
-_Dockerfile_nodep
