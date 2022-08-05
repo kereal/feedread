@@ -6,8 +6,6 @@ require "option_parser"
 require "log"
 require "./models"
 
-Log.setup(:info, Log::IOBackend.new(File.new("./grab.log", "a+")))
-
 
 def grab_feed(source)
   xml = HTTP::Client.get(source.url).body
@@ -59,14 +57,9 @@ def grab_feed(source)
       favorite: false,
       deleted: false
     )
-    puts "   Record created: #{uid}"
     Log.info { "Record created: #{uid}" }
     created_count += 1
   end
-  puts "   Total: #{total_count}"
-  puts "   Exists: #{exists_count}"
-  puts "   Ignored: #{ignored_count}"
-  puts "   Created: #{created_count}"
   Log.info { "Total: #{total_count} / exists: #{exists_count} / ignored: #{ignored_count} / created: #{created_count}" }
   source.update!(last_parsed_at: Time.utc)
 end
@@ -75,16 +68,13 @@ end
 def grab(source_id)
   source = Source.find source_id
   if source
-    puts " * Grabbing source #{source.title}"
     Log.info { "Grabbing source #{source.title}" }
     if ["atom", "rss"].includes? source.type
       grab_feed source
     else
-      puts "Unknown source type: #{source.type}"
       Log.error { "Unknown source type: #{source.type}" }
     end
   else
-    puts "Source with id=#{source_id} not found"
     Log.error { "Source with id=#{source_id} not found" }
   end
 end
@@ -100,7 +90,6 @@ option_parser = OptionParser.parse do |parser|
       begin
         grab(source.id)
       rescue err
-        puts " ! #{err}"
         Log.error { err }
       end
     end
@@ -133,8 +122,11 @@ option_parser = OptionParser.parse do |parser|
     Service.all.to_a
     msg = " * Prune old records\n   deleted: #{deleted_count}"
     Log.info { msg }
-    puts msg
     exit
+  end
+
+  parser.on "--log filename", "Log to file or use STDOUT" do |filename|
+    Log.setup(:info, Log::IOBackend.new(File.new(filename, "a+")))
   end
 
   parser.on "-h", "--help", "Show help" do
