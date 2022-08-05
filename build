@@ -1,10 +1,8 @@
 #!/bin/bash
-
-docker stop feedread
-docker rm feedread
-docker rmi feedread
-
 set -e
+
+docker rm -f feedread &>/dev/null && echo 'Removed old container'
+docker rmi feedread &>/dev/null && echo 'Removed old image'
 
 # make image
 docker build -t feedread .
