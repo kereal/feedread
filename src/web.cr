@@ -43,7 +43,7 @@ get "/sources" do
 end
 
 post "/sources/:id/ignore_category" do |env|
-  new = env.params.body["category"]?.presence.try(&.as(String))
+  new = env.params.body["category"]?.try(&.to_s)
   source = Source.find env.params.url["id"]
   if source && new
     if !source.ignored_categories_list.empty?
@@ -77,7 +77,7 @@ get "/records/favorites" do
 end
 
 get "/records/source/:id" do |env|
-  id = env.params.url["id"]?.presence.try(&.to_i?)
+  id = env.params.url["id"]?.try(&.to_i?)
   if id
     Record.with_sources_as_json(
       false, limit, offset, "AND records.source_id = #{id}"
