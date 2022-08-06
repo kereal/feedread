@@ -388,7 +388,7 @@ body.dark {
       top: 2px;
       }
     .record > .actions > a {
-      padding: 5px;
+      padding: 5px 0 5px;
       margin-top: -4px;
       }
   .load-more {
