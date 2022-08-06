@@ -120,14 +120,13 @@ option_parser = OptionParser.parse do |parser|
             deleted_count += 1
     end
     Service.all.to_a
-    msg = " * Prune old records\n   deleted: #{deleted_count}"
-    Log.info { msg }
+    Log.info { "Prune old records, deleted: #{deleted_count}" }
     exit
   end
 
-  parser.on "--log filename", "Log to file or use STDOUT" do |filename|
-    Log.setup(:info, Log::IOBackend.new(File.new(filename, "a+")))
-  end
+  #parser.on "--log filename", "Log to file or use STDOUT" do |filename|
+  #  Log.setup(:info, Log::IOBackend.new(File.new(filename, "a+")))
+  #end
 
   parser.on "-h", "--help", "Show help" do
     puts parser

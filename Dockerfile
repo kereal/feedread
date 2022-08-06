@@ -27,8 +27,8 @@ RUN chmod +x ./run
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/bin/grab /app/bin/web ./
 COPY --from=builder /app/*.sqlite3 ./
-RUN echo $'#!/bin/sh\ncd /app && ./grab -a --log grab.log' > /etc/periodic/15min/grab_all && chmod a+x /etc/periodic/15min/grab_all \
-    && echo $'#!/bin/sh\ncd /app && ./grab -p 100 --log grab.log' > /etc/periodic/weekly/grab_prune && chmod a+x /etc/periodic/weekly/grab_prune
+RUN echo $'#!/bin/sh\ncd /app && ./grab -a >> grab.log' > /etc/periodic/15min/grab_all && chmod a+x /etc/periodic/15min/grab_all \
+    && echo $'#!/bin/sh\ncd /app && ./grab -p 100 >> grab.log' > /etc/periodic/weekly/grab_prune && chmod a+x /etc/periodic/weekly/grab_prune
 EXPOSE 80/tcp
 
 CMD ./run
