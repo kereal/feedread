@@ -31,7 +31,7 @@ end
 
 delete "/records/:id" do |env|
   record = Record.find env.params.url["id"]
-  if record && record.update!(deleted: true)
+  if record && record.update(deleted: true)
     record.to_json
   else
     env.response.status_code = 400
