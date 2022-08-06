@@ -353,7 +353,7 @@ body.dark {
     filter: invert(.9);
     }
 
-@media only screen and (max-width: 420px) {
+@media only screen and (max-width: 550px) {
   #app {
     padding: 15px;
     }
@@ -362,7 +362,7 @@ body.dark {
     }
 }
 
-@media only screen and (max-width: 390px) {
+@media only screen and (max-width: 420px) {
   #app {
     padding: 0;
     }
