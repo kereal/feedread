@@ -2,7 +2,7 @@
 set -e
 
 docker rm -f feedread &>/dev/null && echo 'Removed old container'
-docker rmi feedread &>/dev/null && echo 'Removed old image'
+docker rmi kereal/feedread &>/dev/null && echo 'Removed old image'
 
 # make image
 docker build -t kereal/feedread .
