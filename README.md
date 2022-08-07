@@ -27,3 +27,5 @@
     docker pull kereal/feedread
     docker run -idt --name feedread -p 3008:80 kereal/feedread
     open http://localhost:3008
+
+По всем вопросам пишите на kereal@gmail.com
