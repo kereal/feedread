@@ -5,7 +5,7 @@ docker rm -f feedread &>/dev/null && echo 'Removed old container'
 docker rmi feedread &>/dev/null && echo 'Removed old image'
 
 # make image
-docker build -t feedread .
+docker build -t kereal/feedread .
 docker rmi `docker images --filter label=stage=builder -q`
 
 
@@ -15,4 +15,6 @@ docker rmi `docker images --filter label=stage=builder -q`
 docker run -idt \
 -v $(pwd)/feedread.sqlite3:/app/feedread.sqlite3 \
 -v $(pwd)/grab.log:/app/grab.log \
---name feedread -p 3008:80 feedread
+--name feedread -p 3008:80 kereal/feedread
+
+# docker pull kereal/feedread
