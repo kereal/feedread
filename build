@@ -9,7 +9,8 @@ docker build -t feedread .
 docker rmi `docker images --filter label=stage=builder -q`
 
 
-[[ -f ./grab.log ]] || touch grab.log
+[[ -f grab.log ]] || touch grab.log
+[[ -f feedread.sqlite3 ]] || cp feedread.example.sqlite3 feedread.sqlite3
 
 docker run -idt \
 -v $(pwd)/feedread.sqlite3:/app/feedread.sqlite3 \

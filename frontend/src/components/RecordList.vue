@@ -89,28 +89,36 @@ export default {
   },
   methods: {
     keyboardEvent(e) {
-      //console.log(e)
-      if (e.which === 40 && this.selected_idx + 1 < this.records.length) {
+      // arrow down ↓
+      if (e.key === "ArrowDown" && this.selected_idx + 1 < this.records.length) {
         this.selected_idx++
         e.preventDefault()
         const sel = document.querySelector(".record.selected")
         if (!isInViewport(sel)) sel.scrollIntoView({ behavior: "smooth" })
       }
-      if (e.which === 38 && this.selected_idx != 0) {
+      // arrow up ↑
+      if (e.key === "ArrowUp" && this.selected_idx != 0) {
         this.selected_idx--
         e.preventDefault()
         const sel = document.querySelector(".record.selected")
         if (!isInViewport(sel)) sel.scrollIntoView({ behavior: "smooth", block: "end" })
       }
-      if (e.which === 46) {
+      // "del" -> delete record
+      if (e.key === "Delete") {
         this.deleteRecord(this.records[this.selected_idx].id)
       }
-      if (e.which === 66)
+      // "f" -> favorite record
+      if (e.key === "f") {
+        this.favoriteRecord(this.records[this.selected_idx].id)
+      }
+      // "b" -> ban category
+      if (e.key === "b")
         this.banCategory(
           this.records[this.selected_idx].source_id,
           this.records[this.selected_idx].category
         )
-      if (e.which === 221)
+      // "]" -> focus link
+      if (e.key === "]")
         document.querySelector(".record.selected > .title > a.link").focus()
     },
     formatPubdate(pubdate) {

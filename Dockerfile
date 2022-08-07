@@ -18,7 +18,7 @@ RUN KEMAL_ENV=test bin/micrate up
 RUN KEMAL_ENV=test crystal spec
 RUN shards build --no-debug --release --production --static --link-flags '-s -w' -v
 
-# Result image with one layer
+# Result image
 FROM alpine:edge
 
 WORKDIR /app

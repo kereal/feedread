@@ -2,7 +2,6 @@
 /lib/
 /.shards/
 *.dwarf
-*.sqlite3
 *.sqbpro
 *.log
 
@@ -13,3 +12,5 @@ frontend/dist-ssr
 
 grab
 web
+feedread.sqlite3
+feedread_test.sqlite3
