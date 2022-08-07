@@ -28,4 +28,4 @@
     docker run -idt --name feedread -p 3008:80 kereal/feedread
     open http://localhost:3008
 
-По всем вопросам пишите на kereal@gmail.com
+Я увлекаюсь программированием для web, люблю всякие Linux-серверы и открыт для общения и предложений в этой сфере. По всем вопросам пишите на kereal@gmail.com
