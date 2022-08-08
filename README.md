@@ -28,7 +28,7 @@
     docker run -idt --name feedread -p 3008:80 kereal/feedread
     open http://localhost:3008
 
-## Сборка из исходников
+### Сборка из исходников
 
     git clone https://github.com/kereal/feedread
     cd feedread
