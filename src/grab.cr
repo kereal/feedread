@@ -122,9 +122,13 @@ option_parser = OptionParser.parse do |parser|
     exit
   end
 
-  #parser.on "--log filename", "Log to file or use STDOUT" do |filename|
-  #  Log.setup(:info, Log::IOBackend.new(File.new(filename, "a+")))
-  #end
+  parser.on "--debug", "Debug mode" do
+    Log.setup do |c|
+      backend = Log::IOBackend.new
+      c.bind "*", :debug, backend
+      c.bind "db.*", :info, backend
+    end
+  end
 
   parser.on "-h", "--help", "Show help" do
     puts parser
