@@ -9,7 +9,6 @@ docker build -t kereal/feedread .
 docker rmi `docker images --filter label=stage=builder -q`
 
 
-[[ -f grab.log ]] || touch grab.log
 [[ -f feedread.sqlite3 ]] || cp feedread.example.sqlite3 feedread.sqlite3
 
 docker run -idt \
