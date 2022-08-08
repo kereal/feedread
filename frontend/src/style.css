@@ -404,6 +404,15 @@ body.dark {
     align-items: center;
     display: flex;
     }
+  .sources > .source > span.type {
+    max-width: 36px;
+    }
+  .sources > .source > span.actions {
+    min-width: 41px;
+    }
+    .sources > .source > span.actions > a {
+      padding: 6px;
+      }
   .dark .record {
     border: 0;
     border-bottom: 1px solid #0c1111c7;
