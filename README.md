@@ -18,7 +18,7 @@
 
 ![dark-and-light](https://user-images.githubusercontent.com/2874327/183303429-3e359cf5-1adb-412b-a74c-d0ace8d33ecb.png)
 
-Все вместе собирается в образ Docker на основе Alpine Linux, размером всего 19Мб. У меня он работает на локальной машине.
+Все вместе собирается в образ Docker на основе Alpine Linux размером всего 19Мб. У меня он работает на локальной машине.
 
 Демо: https://feedread.up.railway.app (из РФ нужен VPN)
 
@@ -28,7 +28,7 @@
     docker run -idt --name feedread -p 3008:80 kereal/feedread
     open http://localhost:3008
 
-## Сборка из исходников
+### Сборка из исходников
 
     git clone https://github.com/kereal/feedread
     cd feedread
