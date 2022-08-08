@@ -1,9 +1,20 @@
 require "granite"
 require "granite/adapter/sqlite"
+require "micrate"
 
 dbname = ENV.fetch("KEMAL_ENV", nil)=="test" ? "feedread_test" : "feedread"
+dburl = "sqlite3://#{dbname}.sqlite3"
+Granite::Connections << Granite::Adapter::Sqlite.new(name: "sqlite3", url: dburl)
 
-Granite::Connections << Granite::Adapter::Sqlite.new(name: "sqlite3", url: "sqlite3://#{dbname}.sqlite3")
+Micrate::DB.connection_url = dburl
+Micrate::DB.connect do |db|
+  Micrate.migration_status(db).each do |_, migrated_at|
+    if migrated_at.nil?
+      Micrate.up(db)
+      break
+    end
+  end
+end
 
 
 class Record < Granite::Base

@@ -32,6 +32,12 @@
 
     git clone https://github.com/kereal/feedread
     cd feedread
-    ./build
+    make
+
+### Сборка образа Docker и запуск контейнера
+
+    git clone https://github.com/kereal/feedread
+    cd feedread
+    make docker
 
 Я увлекаюсь программированием для web, люблю всякие Linux-серверы и открыт для общения и предложений в этой сфере. По всем вопросам пишите на kereal@gmail.com

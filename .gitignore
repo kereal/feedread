@@ -3,6 +3,7 @@
 /.shards/
 *.dwarf
 *.sqbpro
+*.sqlite3
 *.log
 
 frontend/.vscode/*
@@ -12,5 +13,3 @@ frontend/dist-ssr
 
 grab
 web
-feedread.sqlite3
-feedread_test.sqlite3

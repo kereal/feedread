@@ -1,5 +1,3 @@
-require "granite"
-require "granite/adapter/sqlite"
 require "http/client"
 require "xml"
 require "option_parser"
@@ -133,8 +131,13 @@ option_parser = OptionParser.parse do |parser|
     exit
   end
 
-  parser.unknown_args do
-    puts parser
+  parser.unknown_args do |args|
+    args.map{|arg| puts "Unknown argument: #{arg}" }
+    exit
+  end
+
+  parser.missing_option do |arg|
+    puts "Argument #{arg} require option"
     exit
   end
 
