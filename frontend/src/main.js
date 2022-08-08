@@ -4,7 +4,7 @@ import App from "./App.vue"
 import "normalize.css"
 import "./style.css"
 import RecordList from "./components/RecordList.vue"
-import SourcesList from "./components/SourcesList.vue"
+import SourceList from "./components/SourceList.vue"
 
 const router = createRouter({
   history: createWebHistory(),
@@ -12,7 +12,7 @@ const router = createRouter({
     { path: "/", name: "records", component: RecordList },
     { path: "/favorites", name: "favorites", component: RecordList },
     { path: "/source/:id", name: "source", component: RecordList },
-    { path: "/sources", name: "sources", component: SourcesList }
+    { path: "/sources", name: "sources", component: SourceList }
   ]
 })
 
