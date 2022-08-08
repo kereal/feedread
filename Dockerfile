@@ -25,8 +25,8 @@ RUN chmod +x ./run
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/bin/grab /app/bin/web ./
 COPY --from=builder /app/db ./db
-RUN echo $'#!/bin/sh\ncd /app && ./grab -a' > /etc/periodic/15min/grab_all && chmod a+x /etc/periodic/15min/grab_all \
-    && echo $'#!/bin/sh\ncd /app && ./grab -p 100' > /etc/periodic/weekly/grab_prune && chmod a+x /etc/periodic/weekly/grab_prune
+RUN echo $'#!/bin/sh\ncd /app && ./grab -a > /proc/1/fd/1 2>&1' > /etc/periodic/15min/grab_all && chmod a+x /etc/periodic/15min/grab_all \
+    && echo $'#!/bin/sh\ncd /app && ./grab -p 100 > /proc/1/fd/1 2>&1' > /etc/periodic/weekly/grab_prune && chmod a+x /etc/periodic/weekly/grab_prune
 EXPOSE 80/tcp
 
 CMD ./run

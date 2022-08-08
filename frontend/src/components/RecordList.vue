@@ -127,8 +127,6 @@ export default {
     },
     async loadRecords(offset = 0) {
       this.$emit("loading", true)
-      this.error = null
-      this.not_found = false
       try {
         const { data } = await axiosInstance.get(
           `/records${
@@ -137,6 +135,8 @@ export default {
         )
         this.records = data
         this.offset = offset
+        this.error = null
+        this.not_found = false
         if (!this.empty) this.selected_idx = 0
         else this.not_found = true
       } catch (e) {
@@ -147,11 +147,11 @@ export default {
     async deleteRecord(id) {
       if (!id) return
       this.$emit("loading", true)
-      this.error = null
       try {
         const { data } = await axiosInstance.delete(`/records/${id}`)
         this.records = this.records.filter((record) => record.id !== parseInt(data.id))
         if (!this.records[this.selected_idx]) this.selected_idx--
+        this.error = null
       } catch (e) {
         console.log(e), (this.error = e.message)
       }
