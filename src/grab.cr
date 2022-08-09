@@ -6,37 +6,34 @@ require "./models"
 
 
 def grab_feed(source)
-  xml = HTTP::Client.get(source.url).body
+
+  xml = HTTP::Client.get(source.url).body.gsub("content:encoded>","contentEncoded>")
   doc = source.type == "rss" ? XML.parse(xml) : XML.parse_html(xml)
-  total_count = 0
-  exists_count = 0
-  created_count = 0
-  ignored_count = 0
+  total_count = exists_count = created_count = ignored_count = 0
+
   doc.xpath_nodes(source.type == "rss" ? "//item" : "//entry").each do |item|
     total_count += 1
-    uid = item.xpath_nodes(source.type == "rss" ? "guid" : "id").first.content
-    if !item.xpath_nodes("category").empty?
-      category = source.type == "rss" ?
-        item.xpath_nodes("category").first.content :
-        item.xpath_nodes("category").first["label"]
-      category = nil if category.strip.empty?
-    else category = nil end
+
+    uid = item.xpath_node(source.type == "rss" ? "guid" : "id").try(&.content)
+
     if Record.where(uid: uid).exists?
       exists_count += 1
       next
     end
+
+    category = source.type == "rss" ?
+        item.xpath_node("category").try(&.content) :
+        item.xpath_node("category").try(&.["label"])
+    category = nil if category.try(&.strip) == ""
+
     if source.ignored_categories_list.includes?(category)
       ignored_count += 1
       next
     end
-    begin
-      content = item.xpath_nodes("description").first.content
-    rescue
-      begin
-        content = item.xpath_nodes("content:encoded").first.content
-      rescue
-        content = nil; end
-    end
+
+    content = item.xpath_node("description").try(&.content) ||
+              item.xpath_node("contentEncoded").try(&.content)
+
     pubdate = nil
     ["%a, %d %b %Y %T %z", "%a, %d %b %Y %T %^Z", "%Y-%m-%dT%T%z"].each do |format|
       begin
@@ -44,6 +41,7 @@ def grab_feed(source)
         break
       rescue; end
     end
+
     Record.create!(
       source_id: source.id,
       uid: uid,
@@ -55,11 +53,15 @@ def grab_feed(source)
       favorite: false,
       deleted: false
     )
+
     Log.info { "Record created: #{uid}" }
     created_count += 1
+
   end
+
   Log.info { "Total: #{total_count} / exists: #{exists_count} / ignored: #{ignored_count} / created: #{created_count}" }
   source.update!(last_parsed_at: Time.utc)
+
 end
 
 
