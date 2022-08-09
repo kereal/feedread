@@ -15,7 +15,7 @@ before_get do |env|
 end
 
 options "/*" do |env|
-  halt env, status_code: 200
+  halt(env, status_code: 200)
 end
 
 get "/" do |env|
@@ -30,7 +30,7 @@ get "/records" do
 end
 
 delete "/records/:id" do |env|
-  record = Record.find env.params.url["id"]
+  record = Record.find(env.params.url["id"])
   if record && record.update(deleted: true)
     record.to_json
   else
@@ -44,7 +44,7 @@ end
 
 post "/sources/:id/ignore_category" do |env|
   new = env.params.body["category"]?.try(&.to_s)
-  source = Source.find env.params.url["id"]
+  source = Source.find(env.params.url["id"])
   if source && new
     if !source.ignored_categories_list.empty?
       if !source.ignored_categories_list.includes?(new)
@@ -62,7 +62,7 @@ post "/sources/:id/ignore_category" do |env|
 end
 
 post "/records/:id/favorite" do |env|
-  record = Record.find env.params.url["id"]
+  record = Record.find(env.params.url["id"])
   if record && record.update(favorite: true)
     record.to_json
   else
@@ -77,10 +77,10 @@ get "/records/favorites" do
 end
 
 get "/records/source/:id" do |env|
-  id = env.params.url["id"]?.try(&.to_i?)
-  if id
+  source_id = env.params.url["id"]?.try(&.to_i?)
+  if source_id
     Record.with_sources_as_json(
-      false, limit, offset, "AND records.source_id = #{id}"
+      false, limit, offset, "AND records.source_id = #{source_id}"
     )
   else
     env.response.status_code = 400
@@ -88,7 +88,7 @@ get "/records/source/:id" do |env|
 end
 
 delete "/sources/:id" do |env|
-  source = Source.find env.params.url["id"]
+  source = Source.find(env.params.url["id"])
   if source && source.destroy
     source.to_json
   else
@@ -103,7 +103,7 @@ end
 
 # update
 post "/sources/:id" do |env|
-  source = Source.find env.params.url["id"]
+  source = Source.find(env.params.url["id"])
   if source && source.update(env.params.body.to_h)
     source.to_json
   else

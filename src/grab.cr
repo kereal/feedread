@@ -50,7 +50,7 @@ def grab_feed(source)
       title: HTML.unescape(item.xpath_nodes("title").first.content),
       category: category,
       link: source.type == "rss" ? item.xpath_nodes("link").first.content : item.xpath_nodes("link").first["href"],
-      content: content ? HTML.unescape(content).gsub(/<\/?[^>]*>/, "").gsub(/[\t\n]/, " ").gsub("Читать далее", "").strip : nil,
+      content: content ? HTML.unescape(content).gsub(/(<\/?[^>]*>|\t|\n|Читать далее)/, "*").strip : nil,
       pubdate: pubdate,
       favorite: false,
       deleted: false
@@ -64,16 +64,14 @@ end
 
 
 def grab(source_id)
-  source = Source.find source_id
-  if source
+  begin
+    source = Source.find! source_id
     Log.info { "Grabbing source #{source.title}" }
-    if ["atom", "rss"].includes? source.type
+    if ["atom", "rss"].includes?(source.type)
       grab_feed source
-    else
-      Log.error { "Unknown source type: #{source.type}" }
-    end
-  else
-    Log.error { "Source with id=#{source_id} not found" }
+    else raise "Unknown source type: #{source.type}"; end
+  rescue err
+    Log.error { err }
   end
 end
 
@@ -84,13 +82,7 @@ option_parser = OptionParser.parse do |parser|
 
   parser.on "-a", "Grab all sources" do
     Log.info { "Grabbing all sources" }
-    Source.where(active: true).order(id: :asc).each do |source|
-      begin
-        grab(source.id)
-      rescue err
-        Log.error { err }
-      end
-    end
+    Source.where(active: true).order(id: :asc).each {|source| grab source.id }
     exit
   end
 
@@ -125,8 +117,8 @@ option_parser = OptionParser.parse do |parser|
   parser.on "--debug", "Debug mode" do
     Log.setup do |c|
       backend = Log::IOBackend.new
-      c.bind "*", :debug, backend
-      c.bind "db.*", :info, backend
+      c.bind("*", :debug, backend)
+      c.bind("db.*", :info, backend)
     end
   end
 
@@ -144,5 +136,7 @@ option_parser = OptionParser.parse do |parser|
     puts "Argument #{arg} require option"
     exit
   end
+
+  # puts parser
 
 end

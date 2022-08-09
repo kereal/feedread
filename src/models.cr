@@ -83,10 +83,10 @@ class Source < Granite::Base
   validate_not_blank :type
   validate_not_blank :url
   def destroy_records
-    Record.exec "DELETE FROM records WHERE source_id = #{id}"
+    Record.exec("DELETE FROM records WHERE source_id = #{id}")
   end
   def ignored_categories_list
-    self.ignore_categories.try &.split("||") || [] of String
+    self.ignore_categories.try(&.split("||")) || [] of String
   end
 end
 
