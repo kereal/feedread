@@ -10,6 +10,7 @@ def grab_feed(source)
   xml = HTTP::Client.get(source.url).body.gsub("content:encoded>","contentEncoded>")
   doc = source.type == "rss" ? XML.parse(xml) : XML.parse_html(xml)
   total_count = exists_count = created_count = ignored_count = 0
+  ignored_categories_list = source.ignored_categories_list
 
   doc.xpath_nodes(source.type == "rss" ? "//item" : "//entry").each do |item|
     total_count += 1
@@ -26,10 +27,12 @@ def grab_feed(source)
         item.xpath_node("category").try(&.["label"])
     category = nil if category.try(&.strip) == ""
 
-    if source.ignored_categories_list.includes?(category)
+    if ignored_categories_list.includes?(category)
       ignored_count += 1
       next
     end
+
+    title = item.xpath_node("title").try(&.content)
 
     content = item.xpath_node("description").try(&.content) ||
               item.xpath_node("contentEncoded").try(&.content)
@@ -45,10 +48,10 @@ def grab_feed(source)
     Record.create!(
       source_id: source.id,
       uid: uid,
-      title: HTML.unescape(item.xpath_nodes("title").first.content),
+      title: title && HTML.unescape(title),
       category: category,
-      link: source.type == "rss" ? item.xpath_nodes("link").first.content : item.xpath_nodes("link").first["href"],
-      content: content ? HTML.unescape(content).gsub(/(<\/?[^>]*>|\t|\n|Читать далее)/, "*").strip : nil,
+      link: source.type == "rss" ? item.xpath_node("link").try(&.content) : item.xpath_node("link").try(&.["href"]),
+      content: content && HTML.unescape(content).gsub(/(<\/?[^>]*>|Читать далее)/, "").gsub(/\n|\t/," ").strip,
       pubdate: pubdate,
       favorite: false,
       deleted: false
