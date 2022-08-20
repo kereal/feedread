@@ -1,4 +1,4 @@
-FROM alpine:edge as builder
+FROM alpine:latest as builder
 LABEL stage=builder
 
 WORKDIR /app
@@ -17,9 +17,10 @@ RUN KEMAL_ENV=test crystal spec
 RUN shards build --no-debug --release --production --static --link-flags '-s -w' -v
 
 # Result image
-FROM alpine:edge
+FROM alpine:latest
 
 WORKDIR /app
+#RUN apk add tzdata
 COPY ./run ./
 RUN chmod +x ./run
 COPY --from=builder /app/public ./public
