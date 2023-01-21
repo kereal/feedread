@@ -20,8 +20,6 @@
 
 Все вместе собирается в образ Docker на основе Alpine Linux размером всего 19Мб. У меня он работает на локальной машине.
 
-Демо: https://feedread.up.railway.app (из РФ нужен VPN)
-
 ## Установка и запуск
 
     docker pull kereal/feedread
